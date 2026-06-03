@@ -1,0 +1,133 @@
+/*A railway system manages compartments dynamically.
+Each node represents a compartment with seat count.
+Implement:
+Add a compartment at the front or end.
+Remove a compartment from any position.
+Display compartments forward and backward.
+Demonstrate with at least 4 compartments.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Compartment {
+    int seats;
+    struct Compartment *prev;
+    struct Compartment *next;
+};
+
+struct Compartment *head = NULL;
+struct Compartment *tail = NULL;
+
+// Add at Front
+void addFront(int seats) {
+    struct Compartment *newNode =
+        (struct Compartment *)malloc(sizeof(struct Compartment));
+
+    newNode->seats = seats;
+    newNode->prev = NULL;
+    newNode->next = head;
+
+    if (head != NULL)
+        head->prev = newNode;
+    else
+        tail = newNode;
+
+    head = newNode;
+}
+
+// Add at End
+void addEnd(int seats) {
+    struct Compartment *newNode =
+        (struct Compartment *)malloc(sizeof(struct Compartment));
+
+    newNode->seats = seats;
+    newNode->next = NULL;
+    newNode->prev = tail;
+
+    if (tail != NULL)
+        tail->next = newNode;
+    else
+        head = newNode;
+
+    tail = newNode;
+}
+
+// Remove from any position
+void removePosition(int pos) {
+    if (head == NULL) {
+        printf("No compartments available.\n");
+        return;
+    }
+
+    struct Compartment *temp = head;
+
+    for (int i = 1; i < pos && temp != NULL; i++)
+        temp = temp->next;
+
+    if (temp == NULL) {
+        printf("Invalid Position\n");
+        return;
+    }
+
+    if (temp == head)
+        head = temp->next;
+
+    if (temp == tail)
+        tail = temp->prev;
+
+    if (temp->prev != NULL)
+        temp->prev->next = temp->next;
+
+    if (temp->next != NULL)
+        temp->next->prev = temp->prev;
+
+    free(temp);
+
+    printf("Compartment at position %d removed.\n", pos);
+}
+
+// Display Forward
+void displayForward() {
+    struct Compartment *temp = head;
+
+    printf("\nCompartments Forward:\n");
+
+    while (temp != NULL) {
+        printf("%d seats <-> ", temp->seats);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+// Display Backward
+void displayBackward() {
+    struct Compartment *temp = tail;
+
+    printf("\nCompartments Backward:\n");
+
+    while (temp != NULL) {
+        printf("%d seats <-> ", temp->seats);
+        temp = temp->prev;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+
+    // Add compartments
+    addFront(50);
+    addEnd(60);
+    addEnd(70);
+    addEnd(80);
+
+    displayForward();
+    displayBackward();
+
+    // Remove 3rd compartment
+    removePosition(3);
+
+    displayForward();
+    displayBackward();
+
+    return 0;
+}
