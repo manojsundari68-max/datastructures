@@ -1,0 +1,115 @@
+//Circular Linked List Music Player in C
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node {
+    char song[50];
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+// Add song at the end
+void addSong(char name[]) {
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    strcpy(newNode->song, name);
+
+    if (head == NULL) {
+        head = newNode;
+        newNode->next = head;
+        return;
+    }
+
+    struct Node *temp = head;
+    while (temp->next != head)
+        temp = temp->next;
+
+    temp->next = newNode;
+    newNode->next = head;
+}
+
+// Remove song by name
+void removeSong(char name[]) {
+    if (head == NULL) {
+        printf("Playlist is empty.\n");
+        return;
+    }
+
+    struct Node *curr = head;
+    struct Node *prev = NULL;
+
+    // Deleting head node
+    if (strcmp(head->song, name) == 0) {
+        if (head->next == head) {
+            free(head);
+            head = NULL;
+            return;
+        }
+
+        struct Node *last = head;
+        while (last->next != head)
+            last = last->next;
+
+        last->next = head->next;
+        struct Node *temp = head;
+        head = head->next;
+        free(temp);
+
+        printf("%s removed.\n", name);
+        return;
+    }
+
+    prev = head;
+    curr = head->next;
+
+    while (curr != head) {
+        if (strcmp(curr->song, name) == 0) {
+            prev->next = curr->next;
+            free(curr);
+            printf("%s removed.\n", name);
+            return;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+
+    printf("%s not found.\n", name);
+}
+
+// Traverse playlist for k iterations
+void playSongs(int k) {
+    if (head == NULL) {
+        printf("Playlist is empty.\n");
+        return;
+    }
+
+    struct Node *temp = head;
+
+    printf("\nPlaying Songs:\n");
+    for (int i = 0; i < k; i++) {
+        printf("%d. %s\n", i + 1, temp->song);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    // Adding 5 songs
+    addSong("Believer");
+    addSong("Shape of You");
+    addSong("Perfect");
+    addSong("Faded");
+    addSong("Senorita");
+
+    // Play songs continuously for 12 iterations
+    playSongs(12);
+
+    // Remove a song
+    removeSong("Perfect");
+
+    // Play again
+    playSongs(10);
+
+    return 0;
+}
